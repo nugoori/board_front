@@ -32,7 +32,7 @@ function SignUp(props) {
     //? email -> 인증 -> 비밀번호를 찾을 때 새 비밀번호를 설정하도록
     const handleSignUpSubmit = async () => {
         try {
-            const response = await instance.post("/auth/signup", signUpUser);
+            await instance.post("/auth/signup", signUpUser);
         } catch (error) {
             console.error(error);
         }

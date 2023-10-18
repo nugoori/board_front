@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { instance } from '../../api/config/instance';
 
 function SignIn(props) {
 
@@ -21,7 +22,17 @@ function SignIn(props) {
         })
     }
 
-    const handleLoginButtonClick = () => {
+    const handleLoginButtonClick = async () => {
+        try {
+            const response = await instance.post("/auth/signin", signinUser);
+            localStorage.setItem("accessToken", "Bearer " + response.data);
+            window.location.replace("/");
+            
+        } catch (error) {
+            if(error.response.status == 401) {
+                alert(error.response.data.authError);
+            } 
+        }
 
     }
 

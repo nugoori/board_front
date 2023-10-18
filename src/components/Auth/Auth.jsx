@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import SignIn from '../../pages/SignIn/Signin';
-import SignUp from '../../pages/Signup/Signup';
+import SignIn from '../../pages/SignIn/SignIn';
+import SignUp from '../../pages/Signup/SignUp';
 
 function Auth(props) {
     return (
