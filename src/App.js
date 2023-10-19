@@ -1,14 +1,16 @@
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import Auth from './components/Auth/Auth';
+import { useQuery } from 'react-query';
+
+import AuthRoute from './components/Routes/AuthRoute';
 import RootLayout from './components/RootLayout/RootLayout';
 import Home from './pages/Homs/Home';
-import { useQuery } from 'react-query';
 import { instance } from './api/config/instance';
+import AccountRoute from './components/Routes/AccountRoute';
 
 function App() {
-  const navigate = useNavigate();
-
+  // useQurey = get요청 / useMutation? lotation? 굳이 안써도 되지만 
+  // useQuery(["key값", "useEffect의 dependency"])
   const getPrincipal = useQuery(["getPrincipal"], async () => {
     try {
       const option = {
@@ -17,17 +19,21 @@ function App() {
         }
       }
       
-      return await instance.get("/account/principal", option);
+      return await instance.get("/account/principal", option); // getPrincipal안에 응답 데이터가 들어있음
 
     } catch (error) {
       throw new Error(error);
     }
   }, {
     retry: 0,
-    // 10분마다 refetch되면서 요청날아감
+    // 10분마다 요청날아감 / 요청을 보내지 않으면 만료된 데이터가 전역 상태에 남아있게됨
     refetchInterval: 1000 * 60 * 10,
     refetchOnWindowFocus: false
   });
+
+  if(getPrincipal.isLoading) {
+    return <></>
+  }
 
   return (
     // 로그인 상태를 전역상태로 관리 -> 로그인이 필요한 부분에만 로그인 상태를 사용
@@ -35,7 +41,8 @@ function App() {
       <Routes>
 
         <Route path='/' element={ <Home /> }/>
-        <Route path='/auth/*' element={ <Auth /> }/>
+        <Route path='/auth/*' element={ <AuthRoute /> }/>
+        <Route path='/account/*' element={ <AccountRoute /> }/>
         <Route path='/board/:category' element={<></>}/>
         <Route path='/board/:category/register' element={<></>}/>
         <Route path='/board/:category/edit' element={<></>}/>
