@@ -40,6 +40,13 @@ function SignIn(props) {
         navigate("/auth/signup");
     }
 
+    const handleKakaoLogin = () => {
+        window.location.href = "http://localhost:8080/oauth2/authorization/kakao" // back의 provider와 연결?
+    }
+
+    const handleNaverLogin = () => {
+        window.location.href = "http://localhost:8080/oauth2/authorization/naver"
+    }
 
     return (
         <div>
@@ -48,6 +55,8 @@ function SignIn(props) {
                 <input type="password" name="password" placeholder='비밀번호' onChange={handleInputChange} />
                 <button onClick={handleLoginButtonClick}>로그인</button>
                 <button onClick={handleSignUpButtonClick}>회원가입하러 가기</button>
+                <div><button onClick={handleKakaoLogin}>카카오 로그인</button></div>
+                <div><button onClick={handleNaverLogin}>네이버 로그인</button></div>
             </div>
         </div>
     );
