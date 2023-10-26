@@ -9,6 +9,7 @@ import { instance } from './api/config/instance';
 import AccountRoute from './components/Routes/AccountRoute';
 import BoardWrite from './pages/BoardWrite/BoardWrite';
 import BoardList from './pages/BoardList/BoardList';
+import BoardDetails from './pages/BoardDetails/BoardDetails';
 
 function App() {
   // useQurey = get요청 / useMutation? lotation? 굳이 안써도 되지만 
@@ -47,6 +48,7 @@ function App() {
         <Route path='/account/*' element={ <AccountRoute /> }/>
         <Route path='/board/write' element={ <BoardWrite /> }/>
         <Route path='/board/:category/:page' element={ <BoardList />}/>
+        <Route path='/board/:boardId' element={ <BoardDetails/>}/>
         <Route path='/board/:category/edit' element={<></>}/>
 
       </Routes>

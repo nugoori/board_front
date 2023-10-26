@@ -54,6 +54,19 @@ const SPageNumbers = css`
         width: 20px;
         cursor: pointer;
     }
+
+    & button:focus {
+        border: 2px solid black;
+    }
+`
+
+
+const BoardTitle = css`
+    max-width: 500px;
+    width: 500px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; // 줄바꿈 x
 `
 
 function BoardList(props) {
@@ -68,26 +81,29 @@ function BoardList(props) {
 
     const { category, page } = useParams();
 
-    const [ selectedOption, setSelectedOption ] = useState(options[0]);
     const search = {
-        optionName: selectedOption.label,
+        optionName: options[0].label,
         searchValue: ""
     }
 
     const [ searchParams, setSearchParams ] = useState(search);
 
-     const getBoardList = useQuery(["getBoardList", page, category], async () => {
+    const getBoardList = useQuery(["getBoardList", page, category], async () => {
         const option = {
             params: searchParams
         }
         return await instance.get(`/boards/${category}/${page}`, option)
-    },);
+    }, {
+        refetchOnWindowFocus: false
+    });
 
     const getBoardCount = useQuery(["getBoardCount", page, category], async () => {
         const option = {
             params: searchParams
         }
         return await instance.get(`/boards/${category}/count`, option)
+    }, {
+        refetchOnWindowFocus: false
     })
 
     const handleSearchInputChange = (e) => {
@@ -107,9 +123,8 @@ function BoardList(props) {
     const handleSearchButtonClick = () => {
         navigate(`/board/${category}/1`); // 게시물 표시 부분만 렌더링? optionName, searchValue의 상태만 변화
         getBoardList.refetch();
+        getBoardCount.refetch();
     }
-
-    console.log(!getBoardCount.isLoading && getBoardCount.data.data);
 
     const pageNation = () => {
         if(getBoardCount.isLoading) {
@@ -127,7 +142,7 @@ function BoardList(props) {
         for(let i = startIndex; i <= endIndex; i++) {
             pageNumbers.push(i);   
         }
-        
+
         return (
             <>
                 <button disabled={parseInt(page) === 1} onClick={() => {
@@ -172,13 +187,14 @@ function BoardList(props) {
                     </thead>
                     <tbody>
                         {!getBoardList.isLoading && getBoardList?.data?.data.map(board => {
-                            return <tr key={board.boardId}>
+                            return <tr key={board.boardId} onClick={() => {navigate(`/board/${board.boardId}`);
+                            }}>
                                         <td>{board.boardId}</td>
-                                        <td>{board.title}</td>
+                                        <td css={BoardTitle}>{board.title}</td>
                                         <td>{board.nickname}</td>
                                         <td>{board.createDate}</td>
-                                        <td>{board.hitsCount}</td>
                                         <td>{board.likeCount}</td>
+                                        <td>{board.hitsCount}</td>
                                     </tr>
                         })}
                     </tbody>
