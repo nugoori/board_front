@@ -32,7 +32,6 @@ function SideBar(props) {
                 
                 const nums = [ 1, 2, 3, 4, 5 ];
                 const result = nums.reduce((sum, curValue) => {return sum + curValue}, 0) // reduce(fx, 초기값)
-                console.log(result);
 
             });
     }, [])
