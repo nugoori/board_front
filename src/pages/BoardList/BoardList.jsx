@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import RootContainer from '../../components/RootContainer/RootContainer';
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
@@ -70,19 +70,43 @@ function BoardList(props) {
         {value: "작성자", label: "작성자"}
     ]
 
+    const navigate = useNavigate();
+
     const { category, page } = useParams();
 
-    const [ boardList, setBoardList ] = useState();
+    const [ selectedOption, setSelectedOption ] = useState(options[0]);
+    const search = {
+        optionName: selectedOption.label,
+        searchValue: ""
+    }
 
-    const getBoardList = useQuery(["getBoardList", page, category], async () => {
+    const [ searchParams, setSearchParams ] = useState(search);
+
+     const getBoardList = useQuery(["getBoardList", page, category], async () => {
         const option = {
-            params: {
-                optionName: "",
-                searchValue: ""
-            }
+            params: searchParams
         }
         return await instance.get(`/boards/${category}/${page}`, option)
     },);
+
+    const handleSearchInputChange = (e) => {
+        setSearchParams({
+            ...searchParams,
+            searchValue: e.target.value
+        })
+    }
+
+    const handleSearchOptionSelect = (option) => {
+        setSearchParams({
+            ...searchParams,
+            optionName: option.label
+        })
+    }
+
+    const handleSearchButtonClick = () => {
+        navigate(`/board/${category}/1`); // 게시물 표시 부분만 렌더링? optionName, searchValue의 상태만 변화
+        getBoardList.refetch();
+    }
 
     return (
         <RootContainer>
@@ -91,10 +115,10 @@ function BoardList(props) {
     
                 <div css={searchContainer}>
                     <div css={selectBox}>
-                        <ReactSelect options={options} defaultValue={options[0]}/>
+                        <ReactSelect options={options} defaultValue={options[0]} onChange={handleSearchOptionSelect} />
                     </div>
-                    <input type="text" name='' />
-                    <button>검색</button>
+                    <input type="text" onChange={handleSearchInputChange} />
+                    <button onClick={handleSearchButtonClick}>검색</button>
                 </div>
                 <table css={table}>
                     <thead>
