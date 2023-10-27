@@ -7,7 +7,7 @@ import { css } from "@emotion/react"
 import { ref, getDownloadURL, uploadBytes, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../../api/firebase/firebase";
 import { Line } from 'rc-progress';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const infoHeader = css`
     display: flex;
@@ -42,6 +42,7 @@ const file = css`
 
 function Mypage(props) {
 
+    const navigate = useNavigate();
     const queryClinet = useQueryClient();
     const principalState = queryClinet.getQueryState("getPrincipal");
     const principal = principalState.data.data;
@@ -154,7 +155,7 @@ function Mypage(props) {
                         }
                     </div>
                     <div>
-                        누적 포인트: 0원
+                        <h3>누적 포인트: {principal.userPoint} Point</h3><button onClick={() => {navigate("/store/products")}}>포인트 구매</button>
                     </div>
                 </div>
                 <div>

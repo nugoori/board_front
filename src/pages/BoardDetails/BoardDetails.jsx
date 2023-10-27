@@ -2,7 +2,7 @@ import React from 'react';
 import RootContainer from '../../components/RootContainer/RootContainer';
 import { useQuery, useQueryClient } from 'react-query';
 import { instance } from '../../api/config/instance';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useState } from 'react';
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
@@ -55,10 +55,21 @@ const SLikeButton = (isLike) => css`
     cursor: pointer;
 `
 
+const SBoardButtonBox = css`
+    display: flex;
+    justify-content: flex-end;
+
+    & button {
+        margin-left: 10px;
+    }
+`
+
 function BoardDetails(props) {
 
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
     const principal = queryClient.getQueryState("getPrincipal");
+    const getBoardList = queryClient.getQueryState("ggetBoardList");
 
     const { boardId } = useParams();
     const [ board, setBoard ] = useState("");
@@ -114,6 +125,27 @@ function BoardDetails(props) {
         }
     }
 
+    const handleBoardUpdateClick = () => {
+            navigate(`/board/update/${boardId}`);   
+    }
+
+    const handleBoardDeleteClick = async () => {
+        const option = {
+            headers: {
+                Authorization: localStorage.getItem("accessToken")
+            }
+        }
+        try {
+            alert("정말 게시물을 삭제 하시겠습니까?");
+            await instance.delete(`/board/delete/${boardId}`, option);
+            alert("게시물 삭제가 완료되었습니다.")
+            navigate("/board/all/1");
+            getBoardList.refetch();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return (
         <RootContainer>
             <div css={boardContainer}>
@@ -129,6 +161,10 @@ function BoardDetails(props) {
                 <p><b>{board.nickname}</b> - {board.createDate}</p>
                 <div css={line}></div>
                 <div css={contentContainer} dangerouslySetInnerHTML={{ __html: board.boardContent}}></div>
+                <div css={SBoardButtonBox}>
+                    <button onClick={handleBoardUpdateClick}>수정</button>
+                    <button onClick={handleBoardDeleteClick}>삭제</button>
+                </div>
             </div>
         </RootContainer>
     );
